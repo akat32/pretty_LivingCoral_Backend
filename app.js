@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 import './func'
 
 // DB Schemas
-import { Users, Events } from './mongo/index'
+import { Users, Events, Notice, Impeachment } from './mongo/index'
 
 let passport = require('./passport')(Users);
 
@@ -36,10 +36,12 @@ app.use(passport.session());
 // Set Router
 let auth = require('./routes/auth')(router, Users, randomString, passport)
 let event = require('./routes/event')(router, Events, randomString, passport, multer)
+let notice = require('./routes/notice')(router, Notice, Users, passport, randomString, multer)
 
 // Use Router
 app.use('/auth', auth)
 app.use('/event', event)
+app.use('/notice', notice)
 
 // Set Server Port
 const PORT = 3030

@@ -20,9 +20,34 @@ const eventSchema = new mongoose.Schema({
     token: String, // 이벤트 토큰
     html: String // 이벤트 html
 })
-
+const noticeSchema = new mongoose.Schema({
+    title: String, // 제목
+    file: [{ // 공지 파일
+        link: String
+    }],
+    img: [{  // 이미지
+        link: String
+    }],
+    content: String, // 내용
+    date: Date, // 날짜
+    token: String // 글 토큰
+})
+const impeachmentSchema = new mongoose.Schema({
+    title: String, // 제목
+    img: [{  // 이미지
+        link: String
+    }],
+    content: String, // 내용
+    date: Date, // 날짜,
+    writer: String, // 글쓴이
+    writerToken: String, // 글쓴이 토큰
+    token: String // 토큰
+})
 let Users = mongoose.model('users', userSchema);
 let Events = mongoose.model('events', eventSchema);
+let Notice = mongoose.model('notices', noticeSchema);
+let Impeachment = mongoose.model('impeachment', impeachmentSchema);
+
 require('./err')(userSchema)
 
-export { Users, Events }
+export { Users, Events, Notice, Impeachment }
