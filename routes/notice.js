@@ -16,7 +16,21 @@ module.exports = (router, Notice, Users, passport, randomString, multer) => {
 
     router.post('/addNotice', upload.array('img'), async(req,res)=>{
         console.log(req.files)
-        res.send(req.files)
+        let new_notice = {
+          title: req.body.title,
+          content: req.body.content,
+          date: req.body.date,
+          token: randomString.generate(15),
+          img: []
+        }
+        for( let i=0; req.files[i] != null; i++) {
+          let push_img = 'localhost:3030/public/notice/' + req.files[i].filename;
+          new_notice.img.push(push_img)
+        }
+        new_notice = new Notice(new_notice);
+        let result = await new_notice.save();
+        if(!result) return res.status(500).json({message : "ERR!"})
+        else return res.status(200).json({message : "Upload Success!"})
         // [
         //     {
         //         "fieldname": "img",
@@ -39,6 +53,20 @@ module.exports = (router, Notice, Users, passport, randomString, multer) => {
         //         "size": 91979
         //     }
         // ]
+    })
+    .post('/delNotice', async (req,res)=>{
+      let result = await Notice.remove({token : req.body.token})
+      if(!result.result.n) return res.status(500).json({message : "ERR!"})
+      else return res.status(200).json({message : "success!"})
+    })
+    .post('/loadNoticeOne', async(req,res)=>{
+      let result = await Notice.findOne({token : req.body.token})
+      if(!result) return res.status(404).json({message : "Notce Not Found!"})
+      else return res.status(200).json({notice : result})
+    })
+    .post('/loadNoticeList', async(req,res)=>{
+      let result = await Notice.find()
+      res.status(200).json({list : result})
     })
     return router;
 }
